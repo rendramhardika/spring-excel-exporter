@@ -1,6 +1,8 @@
 package com.usu.ac.id.excel_exporter.controller;
 
+import com.usu.ac.id.excel_exporter.data.DataList;
 import com.usu.ac.id.excel_exporter.exporter.BillingExporter;
+import com.usu.ac.id.excel_exporter.exporter.ListExporter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
@@ -14,7 +16,10 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -41,4 +46,22 @@ public class ExporterController {
         BillingExporter billingExporter = new BillingExporter(billings);
         billingExporter.export(response);
     }
+
+    @GetMapping("/datalist_to_excel")
+    public void generateExcelFromDataList(HttpServletResponse response) throws IOException {
+
+        List<HashMap<String, Object>> dataList = new ArrayList<>();
+        dataList.addAll(DataList.getDataList());
+
+        response.setContentType("application/octet-stream");
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=Billings.xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        ListExporter listExporter = new ListExporter(dataList);
+        listExporter.export(response);
+
+    }
+
+
 }
